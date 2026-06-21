@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Hecate</title>
+<style>
+
+@font-face {
+  font-family: 'IM Fell English';
+  src: url('fonts/IMFellEnglish-Regular.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'IM Fell English';
+  src: url('fonts/IMFellEnglish-Italic.ttf') format('truetype');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'Jost';
+  src: url('fonts/Jost-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 900; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Jost';
+  src: url('fonts/Jost-Italic-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 900; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Mono';
+  src: url('fonts/iAWriterMonoS-Regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'iA Writer Mono';
+  src: url('fonts/iAWriterMonoS-Italic.woff2') format('woff2');
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: #03030a;
+  color: rgba(255,255,255,0.82);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}
+
+/* ---------- fixed background canvas stack ---------- */
+.canvas-stack {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: #03030a;
+}
+.canvas-stack canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  will-change: opacity;
+}
+
+/* ---------- foreground content ---------- */
+main { position: relative; z-index: 1; }
+
+section.intro, section.outro {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 24px;
+}
+
+section.phase {
+  min-height: 175vh;
+  display: flex;
+  justify-content: center;
+  padding-top: 20vh;
+}
+
+.phase-content {
+  max-width: 600px;
+  width: 100%;
+  padding: 0 28px;
+}
+
+.eyebrow {
+  font-family: 'Jost', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 18px;
+}
+
+h1.phase-title {
+  font-family: 'IM Fell English', serif;
+  font-weight: 400;
+  font-size: clamp(48px, 8vw, 84px);
+  line-height: 1.05;
+  color: rgba(255,255,255,0.94);
+  margin-bottom: 14px;
+}
+
+.phase-desc {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  color: rgba(255,255,255,0.46);
+  margin-bottom: 64px;
+  line-height: 1.7;
+}
+
+/* ---------- audio control ---------- */
+.player {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.play-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.3s, background 0.3s;
+}
+.play-btn:hover { border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
+.play-btn:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
+.play-btn svg { width: 14px; height: 14px; }
+
+.player-meta {
+  font-family: 'iA Writer Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.32);
+  line-height: 1.6;
+}
+.player-meta .status { color: rgba(255,255,255,0.55); }
+
+/* ---------- intro / outro text ---------- */
+.intro-title {
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(56px, 11vw, 120px);
+  font-weight: 400;
+  margin-bottom: 22px;
+  color: rgba(255,255,255,0.95);
+}
+.intro-sub {
+  font-family: 'Jost', sans-serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  color: rgba(255,255,255,0.42);
+  margin-bottom: 48px;
+}
+.scroll-cue {
+  font-family: 'iA Writer Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  animation: pulse 3.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.28} 50%{opacity:0.65} }
+
+.outro-text {
+  font-family: 'iA Writer Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+@media (max-width: 540px) {
+  section.phase { padding-top: 14vh; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="canvas-stack" aria-hidden="true">
+  <canvas id="canvas-0"></canvas>
+  <canvas id="canvas-1"></canvas>
+  <canvas id="canvas-2"></canvas>
+  <canvas id="canvas-3"></canvas>
+</div>
+
+<main>
+
+  <section class="intro">
+    <h1 class="intro-title">Hecate</h1>
+    <p class="intro-sub">Part one of a four-part work, in four phases.</p>
+    <p class="scroll-cue">Scroll ↓</p>
+  </section>
+
+  <section class="phase" id="phase-0">
+    <div class="phase-content">
+      <p class="eyebrow">Phase 0 — Latency</p>
+      <h1 class="phase-title">Latency</h1>
+      <p class="phase-desc">No&#8209;input threshold — sound before sound — pre&#8209;delta</p>
+      <div class="player">
+        <button class="play-btn" data-audio="audio-0" aria-label="Play Latency loop">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="player-meta">
+          <div class="status" data-status="audio-0">Play</div>
+          <div>Loop — 0:37</div>
+        </div>
+        <audio id="audio-0" src="audio/hecate_00_latency_loop.mp3" loop preload="none"></audio>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase" id="phase-1">
+    <div class="phase-content">
+      <p class="eyebrow">Phase 1 — B1</p>
+      <h1 class="phase-title">B1</h1>
+      <p class="phase-desc">B&#9838; 61.74 Hz — ground tone — delta boundary</p>
+      <div class="player">
+        <button class="play-btn" data-audio="audio-1" aria-label="Play B1 loop">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="player-meta">
+          <div class="status" data-status="audio-1">Play</div>
+          <div>Loop — 0:45</div>
+        </div>
+        <audio id="audio-1" src="audio/hecate_01_b1_loop.mp3" loop preload="none"></audio>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase" id="phase-2">
+    <div class="phase-content">
+      <p class="eyebrow">Phase 2 — Enys</p>
+      <h1 class="phase-title">Enys</h1>
+      <p class="phase-desc">Harmonic drift — reflection — low theta</p>
+      <div class="player">
+        <button class="play-btn" data-audio="audio-2" aria-label="Play Enys loop">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="player-meta">
+          <div class="status" data-status="audio-2">Play</div>
+          <div>Loop — 1:30</div>
+        </div>
+        <audio id="audio-2" src="audio/hecate_02_enys_loop.mp3" loop preload="none"></audio>
+      </div>
+    </div>
+  </section>
+
+  <section class="phase" id="phase-3">
+    <div class="phase-content">
+      <p class="eyebrow">Phase 3 — Soliloquy</p>
+      <h1 class="phase-title">Soliloquy</h1>
+      <p class="phase-desc">Low frequency excitation — becoming — theta</p>
+      <div class="player">
+        <button class="play-btn" data-audio="audio-3" aria-label="Play Soliloquy loop">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <div class="player-meta">
+          <div class="status" data-status="audio-3">Play</div>
+          <div>Loop — 1:27</div>
+        </div>
+        <audio id="audio-3" src="audio/hecate_03_soliloquy_loop.mp3" loop preload="none"></audio>
+      </div>
+    </div>
+  </section>
+
+  <section class="outro">
+    <p class="outro-text">Hecate — part one of a four&#8209;part work</p>
+  </section>
+
+</main>
+
+<script>
+/* ---------------- audio play/pause toggle ---------------- */
+document.querySelectorAll('.play-btn').forEach(btn => {
+  const audio = document.getElementById(btn.dataset.audio);
+  const status = document.querySelector(`[data-status="${btn.dataset.audio}"]`);
+  const iconPlay = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  const iconPause = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('audio').forEach(a => {
+      if (a !== audio && !a.paused) {
+        a.pause();
+        const otherBtn = document.querySelector(`[data-audio="${a.id}"]`);
+        if (otherBtn) otherBtn.innerHTML = iconPlay;
+        const otherStatus = document.querySelector(`[data-status="${a.id}"]`);
+        if (otherStatus) otherStatus.textContent = 'Play';
+      }
+    });
+    if (audio.paused) {
+      audio.play();
+      btn.innerHTML = iconPause;
+      status.textContent = 'Playing';
+    } else {
+      audio.pause();
+      btn.innerHTML = iconPlay;
+      status.textContent = 'Play';
+    }
+  });
+
+  audio.addEventListener('ended', () => {
+    btn.innerHTML = iconPlay;
+    status.textContent = 'Play';
+  });
+});
+
+/* ---------------- scroll-driven canvas crossfade ---------------- */
+(function() {
+  const canvases = [0,1,2,3].map(i => document.getElementById('canvas-'+i));
+  const sectionIds = ['phase-0','phase-1','phase-2','phase-3'];
+  let boundaries = []; // [introEnd, p0/p1, p1/p2, p2/p3, p3End]
+
+  function computeBoundaries() {
+    const sections = sectionIds.map(id => document.getElementById(id));
+    boundaries = [];
+    boundaries.push(sections[0].offsetTop); // intro -> phase0
+    for (let i = 0; i < sections.length - 1; i++) {
+      boundaries.push(sections[i+1].offsetTop); // phaseN -> phaseN+1
+    }
+    boundaries.push(sections[sections.length-1].offsetTop + sections[sections.length-1].offsetHeight); // phase3 -> outro
+  }
+
+  function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+
+  function transitionProgress(boundaryY, viewportCenter, range) {
+    return clamp((viewportCenter - (boundaryY - range/2)) / range, 0, 1);
+  }
+
+  let ticking = false;
+  function update() {
+    ticking = false;
+    const vh = window.innerHeight;
+    const viewportCenter = window.scrollY + vh/2;
+    const range = vh * 0.7;
+
+    for (let i = 0; i < 4; i++) {
+      const left = transitionProgress(boundaries[i], viewportCenter, range);
+      const right = transitionProgress(boundaries[i+1], viewportCenter, range);
+      const opacity = clamp(left * (1 - right), 0, 1);
+      canvases[i].style.opacity = opacity.toFixed(3);
+    }
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('resize', () => { computeBoundaries(); update(); });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('load', () => { computeBoundaries(); update(); });
+  // also compute immediately in case fonts shift layout slightly later
+  computeBoundaries();
+  update();
+  setTimeout(() => { computeBoundaries(); update(); }, 400);
+})();
+</script>
+
+<script src="js/phase-0.js"></script>
+<script src="js/phase-1.js"></script>
+<script src="js/phase-2.js"></script>
+<script src="js/phase-3.js"></script>
+
+</body>
+</html>
