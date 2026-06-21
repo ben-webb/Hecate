@@ -19,12 +19,12 @@
 }
 @font-face {
   font-family: 'Jost';
-  src: url('fonts/Jost-VariableFont_wght.ttf') format('truetype');
+  src: url('fonts/Jost-VariableFont_wght.ttf');
   font-weight: 100 900; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'Jost';
-  src: url('fonts/Jost-Italic-VariableFont_wght.ttf') format('truetype');
+  src: url('fonts/Jost-Italic-VariableFont_wght.ttf');
   font-weight: 100 900; font-style: italic; font-display: swap;
 }
 @font-face {
@@ -79,6 +79,10 @@ section.intro, section.outro {
   justify-content: center;
   text-align: center;
   padding: 0 24px;
+}
+
+.intro-spacer {
+  min-height: 100vh;
 }
 
 section.phase {
@@ -215,9 +219,11 @@ h1.phase-title {
 
   <section class="intro">
     <h1 class="intro-title">Hecate</h1>
-    <p class="intro-sub">Part one of a four-part composition.</p>
+    <p class="intro-sub">Studies for a Resonant Environment.</p>
     <p class="scroll-cue">Scroll ↓</p>
   </section>
+
+  <div class="intro-spacer" aria-hidden="true"></div>
 
   <section class="phase" id="phase-0">
     <div class="phase-content">
