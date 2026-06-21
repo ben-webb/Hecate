@@ -19,12 +19,12 @@
 }
 @font-face {
   font-family: 'Jost';
-  src: url('fonts/Jost-VariableFont_wght.ttf') format('truetype-variations');
+  src: url('fonts/Jost-VariableFont_wght.ttf') format('truetype');
   font-weight: 100 900; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'Jost';
-  src: url('fonts/Jost-Italic-VariableFont_wght.ttf') format('truetype-variations');
+  src: url('fonts/Jost-Italic-VariableFont_wght.ttf') format('truetype');
   font-weight: 100 900; font-style: italic; font-display: swap;
 }
 @font-face {
@@ -82,7 +82,7 @@ section.intro, section.outro {
 }
 
 section.phase {
-  min-height: 175vh;
+  min-height: 240vh;
   display: flex;
   justify-content: center;
   padding-top: 20vh;
@@ -123,38 +123,37 @@ h1.phase-title {
   line-height: 1.7;
 }
 
-/* ---------- audio control ---------- */
-.player {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.play-btn {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.3);
-  background: transparent;
-  color: rgba(255,255,255,0.75);
-  cursor: pointer;
+/* ---------- ambient sound toggle ---------- */
+.sound-toggle {
+  position: fixed;
+  top: 28px;
+  right: 28px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  transition: border-color 0.3s, background 0.3s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.3;
+  animation: pulse 3.2s ease-in-out infinite;
+  transition: opacity 0.3s;
 }
-.play-btn:hover { border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
-.play-btn:focus-visible { outline: 2px solid rgba(255,255,255,0.6); outline-offset: 2px; }
-.play-btn svg { width: 14px; height: 14px; }
-
-.player-meta {
-  font-family: 'iA Writer Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.32);
-  line-height: 1.6;
+.sound-toggle:hover,
+.sound-toggle:focus-visible {
+  opacity: 0.75;
+  animation-play-state: paused;
 }
-.player-meta .status { color: rgba(255,255,255,0.55); }
+.sound-toggle:focus-visible { outline: 1px solid rgba(255,255,255,0.5); outline-offset: 6px; }
+.sound-toggle svg {
+  width: 17px;
+  height: 17px;
+  color: rgba(255,255,255,0.85);
+}
+.sound-toggle.is-on { animation: none; opacity: 0.4; }
+.sound-toggle.is-on:hover { opacity: 0.8; }
 
 /* ---------- intro / outro text ---------- */
 .intro-title {
@@ -206,11 +205,17 @@ h1.phase-title {
   <canvas id="canvas-3"></canvas>
 </div>
 
+<button class="sound-toggle" id="sound-toggle" aria-label="Begin sound" aria-pressed="false">
+  <svg id="sound-icon" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+  </svg>
+</button>
+
 <main>
 
   <section class="intro">
     <h1 class="intro-title">Hecate</h1>
-    <p class="intro-sub">Part one of a four-part work, in four phases.</p>
+    <p class="intro-sub">Part one of a four-part composition.</p>
     <p class="scroll-cue">Scroll ↓</p>
   </section>
 
@@ -219,16 +224,6 @@ h1.phase-title {
       <p class="eyebrow">Phase 0 — Latency</p>
       <h1 class="phase-title">Latency</h1>
       <p class="phase-desc">No&#8209;input threshold — sound before sound — pre&#8209;delta</p>
-      <div class="player">
-        <button class="play-btn" data-audio="audio-0" aria-label="Play Latency loop">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <div class="player-meta">
-          <div class="status" data-status="audio-0">Play</div>
-          <div>Loop — 0:37</div>
-        </div>
-        <audio id="audio-0" src="audio/hecate_00_latency_loop.mp3" loop preload="none"></audio>
-      </div>
     </div>
   </section>
 
@@ -237,16 +232,6 @@ h1.phase-title {
       <p class="eyebrow">Phase 1 — B1</p>
       <h1 class="phase-title">B1</h1>
       <p class="phase-desc">B&#9838; 61.74 Hz — ground tone — delta boundary</p>
-      <div class="player">
-        <button class="play-btn" data-audio="audio-1" aria-label="Play B1 loop">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <div class="player-meta">
-          <div class="status" data-status="audio-1">Play</div>
-          <div>Loop — 0:45</div>
-        </div>
-        <audio id="audio-1" src="audio/hecate_01_b1_loop.mp3" loop preload="none"></audio>
-      </div>
     </div>
   </section>
 
@@ -255,16 +240,6 @@ h1.phase-title {
       <p class="eyebrow">Phase 2 — Enys</p>
       <h1 class="phase-title">Enys</h1>
       <p class="phase-desc">Harmonic drift — reflection — low theta</p>
-      <div class="player">
-        <button class="play-btn" data-audio="audio-2" aria-label="Play Enys loop">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <div class="player-meta">
-          <div class="status" data-status="audio-2">Play</div>
-          <div>Loop — 1:30</div>
-        </div>
-        <audio id="audio-2" src="audio/hecate_02_enys_loop.mp3" loop preload="none"></audio>
-      </div>
     </div>
   </section>
 
@@ -273,61 +248,88 @@ h1.phase-title {
       <p class="eyebrow">Phase 3 — Soliloquy</p>
       <h1 class="phase-title">Soliloquy</h1>
       <p class="phase-desc">Low frequency excitation — becoming — theta</p>
-      <div class="player">
-        <button class="play-btn" data-audio="audio-3" aria-label="Play Soliloquy loop">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <div class="player-meta">
-          <div class="status" data-status="audio-3">Play</div>
-          <div>Loop — 1:27</div>
-        </div>
-        <audio id="audio-3" src="audio/hecate_03_soliloquy_loop.mp3" loop preload="none"></audio>
-      </div>
     </div>
   </section>
 
-  <section class="outro">
-    <p class="outro-text">Hecate — part one of a four&#8209;part work</p>
-  </section>
+  <section class="outro"></section>
 
 </main>
 
 <script>
-/* ---------------- audio play/pause toggle ---------------- */
-document.querySelectorAll('.play-btn').forEach(btn => {
-  const audio = document.getElementById(btn.dataset.audio);
-  const status = document.querySelector(`[data-status="${btn.dataset.audio}"]`);
-  const iconPlay = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
-  const iconPause = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
+/* ---------------- Web Audio: ambient scroll-driven engine ---------------- */
+const AUDIO_SRCS = [
+  'audio/hecate_00_latency_loop.mp3',
+  'audio/hecate_01_b1_loop.mp3',
+  'audio/hecate_02_enys_loop.mp3',
+  'audio/hecate_03_soliloquy_loop.mp3'
+];
 
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('audio').forEach(a => {
-      if (a !== audio && !a.paused) {
-        a.pause();
-        const otherBtn = document.querySelector(`[data-audio="${a.id}"]`);
-        if (otherBtn) otherBtn.innerHTML = iconPlay;
-        const otherStatus = document.querySelector(`[data-status="${a.id}"]`);
-        if (otherStatus) otherStatus.textContent = 'Play';
-      }
-    });
-    if (audio.paused) {
-      audio.play();
-      btn.innerHTML = iconPause;
-      status.textContent = 'Playing';
-    } else {
-      audio.pause();
-      btn.innerHTML = iconPlay;
-      status.textContent = 'Play';
-    }
-  });
+const AudioCtor = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioCtor();
+const masterGain = audioCtx.createGain();
+masterGain.gain.value = 0;
+masterGain.connect(audioCtx.destination);
 
-  audio.addEventListener('ended', () => {
-    btn.innerHTML = iconPlay;
-    status.textContent = 'Play';
-  });
+const phaseGains = [null, null, null, null];
+let started = false;
+let muted = true;
+
+// Decode all four loops in the background as soon as the page loads —
+// no user gesture required for fetching/decoding, only for audible playback.
+AUDIO_SRCS.forEach((src, i) => {
+  fetch(src)
+    .then(r => r.arrayBuffer())
+    .then(buf => audioCtx.decodeAudioData(buf))
+    .then(decoded => {
+      const source = audioCtx.createBufferSource();
+      source.buffer = decoded;
+      source.loop = true;
+      const gain = audioCtx.createGain();
+      gain.gain.value = 0;
+      source.connect(gain);
+      gain.connect(masterGain);
+      source.start(0);
+      phaseGains[i] = gain;
+    })
+    .catch(err => console.warn('Audio failed to load:', src, err));
 });
 
-/* ---------------- scroll-driven canvas crossfade ---------------- */
+const iconDot = '<circle cx="12" cy="12" r="2.5" fill="currentColor"/>';
+const iconWaves =
+  '<circle cx="12" cy="12" r="2" fill="currentColor"/>' +
+  '<circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="1" opacity="0.55"/>' +
+  '<circle cx="12" cy="12" r="10.5" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>';
+
+const toggleBtn = document.getElementById('sound-toggle');
+const soundIcon = document.getElementById('sound-icon');
+
+function setToggleVisual(on) {
+  soundIcon.innerHTML = on ? iconWaves : iconDot;
+  toggleBtn.classList.toggle('is-on', on);
+  toggleBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+  toggleBtn.setAttribute('aria-label', on ? 'Mute sound' : 'Begin sound');
+}
+
+toggleBtn.addEventListener('click', () => {
+  const now = audioCtx.currentTime;
+  if (!started) {
+    started = true;
+    muted = false;
+    audioCtx.resume();
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+    masterGain.gain.linearRampToValueAtTime(1, now + 0.8);
+    setToggleVisual(true);
+  } else {
+    muted = !muted;
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+    masterGain.gain.linearRampToValueAtTime(muted ? 0 : 1, now + 0.5);
+    setToggleVisual(!muted);
+  }
+});
+
+/* ---------------- scroll-driven crossfade: colour + sound together ---------------- */
 (function() {
   const canvases = [0,1,2,3].map(i => document.getElementById('canvas-'+i));
   const sectionIds = ['phase-0','phase-1','phase-2','phase-3'];
@@ -361,6 +363,12 @@ document.querySelectorAll('.play-btn').forEach(btn => {
       const right = transitionProgress(boundaries[i+1], viewportCenter, range);
       const opacity = clamp(left * (1 - right), 0, 1);
       canvases[i].style.opacity = opacity.toFixed(3);
+
+      if (phaseGains[i]) {
+        // equal-power curve so overlapping audio doesn't dip in perceived loudness mid-blend
+        const audioGain = Math.sin(opacity * Math.PI / 2);
+        phaseGains[i].gain.value = audioGain;
+      }
     }
   }
 
@@ -374,7 +382,6 @@ document.querySelectorAll('.play-btn').forEach(btn => {
   window.addEventListener('resize', () => { computeBoundaries(); update(); });
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('load', () => { computeBoundaries(); update(); });
-  // also compute immediately in case fonts shift layout slightly later
   computeBoundaries();
   update();
   setTimeout(() => { computeBoundaries(); update(); }, 400);
