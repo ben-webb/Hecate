@@ -347,7 +347,7 @@ toggleBtn.addEventListener('click', () => {
     for (let i = 0; i < sections.length - 1; i++) {
       boundaries.push(sections[i+1].offsetTop); // phaseN -> phaseN+1
     }
-    boundaries.push(outroEl.offsetTop + outroEl.offsetHeight - window.innerHeight); // phase3 lingers through the outro, then fades to black before the very end
+    boundaries.push(outroEl.offsetTop + outroEl.offsetHeight * 0.6); // phase3 lingers, then fades — leaving real silence and black before the end
   }
 
   function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
@@ -365,7 +365,8 @@ toggleBtn.addEventListener('click', () => {
 
     for (let i = 0; i < 4; i++) {
       const left = transitionProgress(boundaries[i], viewportCenter, range);
-      const right = transitionProgress(boundaries[i+1], viewportCenter, range);
+      const rightRange = (i === 3) ? range * 2 : range; // the closing dissolve gets a slower, more ceremonial fade
+      const right = transitionProgress(boundaries[i+1], viewportCenter, rightRange);
       const opacity = clamp(left * (1 - right), 0, 1);
       canvases[i].style.opacity = opacity.toFixed(3);
 
